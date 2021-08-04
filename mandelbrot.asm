@@ -7,13 +7,13 @@
 ; na parte de mexer com os registradores, qualquer coisa me pergunta
 jmp main
 
+; Variaveis globais que sao uteis para as operacoes aritimeticas
 im0: var #1
 real0: var #1
 offset: var #1
 4xoffset: var #1
 n_iterations: var #1
 mf: var #1
-
 
 main:
 
@@ -45,10 +45,13 @@ mandelbrot_main:
     loadn r1, #0
     loadn r2, #0
 
+    ; Dois loops enlacados que ciclam por todos os "pixels" da tela
     y_loop:
         loadn r7, #30
         cmp r5, r7
         jeq y_loop_end
+
+        ; im0 = y * offset
         loadn r7, offset
         loadi r6, r2
         mult r5, r6, r7 
@@ -56,9 +59,13 @@ mandelbrot_main:
         loadn r7, #40
         cmp r4, r7
         jeq x_loop_end
+
+        ; real0 = x * offset
         loadn r7, offset
         loadi r6, r1
         mult r5, r6, r7 
+
+        ; mandelbrot_flag == 0
         loadn r3, #1
         store mf, r3
 
