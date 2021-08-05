@@ -30,7 +30,7 @@ main:
     ; Setando o offset que sera usado para fazer as operacoes
     loadn r7, #256
     store offset, r7
-    loadn r7, #1024
+    loadn r7, #2
     store mOffset, r7
 
     call mandelbrot_main
@@ -66,7 +66,7 @@ mandelbrot_main:
         mov r6, r2
         mul r5, r6, r7
 
-        loadn r7, #39
+        loadn r7, #29
         cmp r2, r7
         jgr y_loop_end
         ;inc r2      ; Y++
@@ -82,7 +82,7 @@ mandelbrot_main:
         mov r6, r1
         mul r4, r6, r7
 
-        loadn r7, #29
+        loadn r7, #39
         cmp r1, r7
         jgr x_loop_end
         ;inc r1      ; X++
@@ -125,17 +125,15 @@ mandelbrot_main:
 
         push r1
 
-        loadn r1, #39
-        mul r2, r2, r7
+    mul r2, r2, r7
+
+        loadn r1, #40
         div r2, r2, r1
 
-        ; onde declara esse real_end?
         load r1, real_end
         mul r2, r2, r1
 
         pop r1
-
-        div r2, r2, r7
 
         ;im2 = (im * im) / offset
         load r7, offset
@@ -144,27 +142,30 @@ mandelbrot_main:
 
         push r1
 
-        loadn r1, #29
         mul r3, r3, r7
+
+        loadn r1, #30
         div r3, r3, r1
 
         load r1, im_end
         mul r3, r3, r1
+    ;; breakp
 
         pop r1
 
+        load r7, offset
+        div r2, r2, r7
         div r3, r3, r7
 
-
-        mul r2, r2, r2
-        mul r3, r3, r3
-
-
-        ; dar pop nisso ?
-        ;push r6         ; para usar o registrador r6 sem perder a referencia ao contador
+    push r4
+    loadn r4, #2
+        pow r2, r2, r4
+    pow r3, r3, r4
+        pop r4
 
         ; Se r_squared + i_squared) > (4 * offset), mf = 0, jmp escape
         add r7, r2, r3
+    breakp
         load r0, mOffset
         cmp r7, r0
         ;; halt
@@ -188,25 +189,9 @@ mandelbrot_main:
         jmp iterations_loop
         
     escape:
-        ;; load r0, mf
-        ;; jnz is_mandelbrot
-        ;; jmp ending_mandelbrot_iterations
-
-            ;; push r1
-            ;; push r2
-            ;; push r3
-
-            ;; loadn r3, #'x'
-            ;; loadn r1, #0
-            ;; outchar r3, r1
-
-            ;; pop r3
-            ;; pop r2
-            ;; pop r1
-
-            breakp
             load r1, posx
             load r2, posy
+            ;; breakp
 
             loadn r3, #40
             cmp r6, r3
@@ -250,9 +235,9 @@ mandelbrot_main:
 
             printa:
                 loadn r4, #40
-                mul r1, r1, r4
+                mul r2, r2, r4
                 add r2, r1, r2
-                outchar r3, r1
+                outchar r3, r2
 
         ; imprime o ponto usando posx e posy
         jmp ending_mandelbrot_iterations
@@ -262,6 +247,7 @@ mandelbrot_main:
         ;; pop r6
         ;; loadn r7, #0
         ;; store mf, r7
+    breakp
         jmp escape
         
     ending_mandelbrot_iterations:
