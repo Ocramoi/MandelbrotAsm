@@ -85,7 +85,7 @@ mandelbrot_main:
         loadn r7, #29
         cmp r1, r7
         jgr x_loop_end
-        inc r1      ; X++
+        ;inc r1      ; X++
 
         ; mandelbrot_flag = 1
         loadn r3, #1
@@ -119,14 +119,19 @@ mandelbrot_main:
         jgr escape
 
         ;r2 = (r * r) / offset
-        mul r2, r0, r0
         load r7, offset
-        div r2, r2, r7
+        div r7, r0, r7
+        mul r2, r0, r7
+        ;load r7, offset
+        ;div r2, r2, r7
 
         ;im2 = (im * im) / offset
-        mul r3, r1, r1
         load r7, offset
-        div r3, r3, r7
+        div r7, r1, r7
+        mul r3, r1, r7
+        ;mul r3, r1, r1
+        ;load r7, offset
+        ;div r3, r3, r7
 
         ; Se r_squared + i_squared) > (4 * offset), mf = 0, jmp escape
         push r6         ; para usar o registrador r6 sem perder a referencia ao contador
@@ -174,45 +179,27 @@ mandelbrot_main:
 
         ; TODO: colocar aqui o plot dos dos pontos de acordo com o charmap
         ; usar o posx e posy
-        push r0
-        push r1
-        push r2
-        push r3
-        push r4
 
+        ;breakp
         load r0, mf
-        ;loadn r7, #0
-        ;cmp r0, r7
-        breakp
         jnz is_mandelbrot 
-            pop r4
-            pop r3
-            pop r2
-            pop r1
 
-        ;nao imprime o ponto
         jmp ending_mandelbrot_iterations
         is_mandelbrot:
-         load r1, posx
-         load r2, posy
-         loadn r3, #120
-         loadn r4, #40
-         ;halt
-         mul r2, r2, r4
-         add r2, r1, r2
-         outchar r3, r2
+            load r1, posx
+            load r2, posy
+            loadn r3, #120
+            loadn r4, #40
+            mul r2, r2, r4
+            add r2, r1, r2
+            outchar r3, r2
 
-        pop r4
-        pop r3
-        pop r2
-        pop r1
-        pop r0
-
-        ; imprime o ponto usando posx e posy
-        jmp ending_mandelbrot_iterations
+            ; imprime o ponto usando posx e posy
+            jmp ending_mandelbrot_iterations
 
     ; Mandelbrot flag == 0
     setting_mf:
+        pop r6
         loadn r7, #0
         store mf, r7
         jmp escape
@@ -223,7 +210,7 @@ mandelbrot_main:
         pop r1
         pop r0
         
-        ;inc r1          ; x++
+        inc r1          ; x++
         loadn r6, #0    ; reinicia o contador k, setando ele para 0, para futuras iteracoes
         jmp x_loop
 
