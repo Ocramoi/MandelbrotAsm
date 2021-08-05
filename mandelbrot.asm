@@ -28,7 +28,6 @@ main:
     call mandelbrot_main
     halt
 
-;   r0 = screen counter, contador do loop que passa por todos os pontos da tela     <<<<<==== ignora
 ;   r1 = valor da variavel x, dado pelo valor do contador em cada iteracao da linha 
 ;   r2 = valor da variavel y, incrementado a cada iteracao da linha 
 ;   r3 = mandelbrot flag, indica se um "pixel" da tela sera pintado ou nao 
@@ -36,12 +35,10 @@ main:
 ;   r5 = valor inicial do num imaginario, mesma coisa do num real 
 mandelbrot_main:
     ; Setando a posicao inicial assim como os valores iniciais como 0
-    loadn r0, #0
     loadn r1, #0
     loadn r2, #0
     loadn r4, #0
     loadn r5, #0
-    store posy, r5
 
     ; Dois loops enlacados que ciclam por todos os "pixels" da tela
     y_loop:
@@ -59,30 +56,36 @@ mandelbrot_main:
     ;;     pop r2
     ;;     pop r1
 
-        load r5, posy
+        ;load r2, posy
+        store posy, r2
+
     ;; halt
-        loadn r7, #39
-        cmp r5, r7
-        jgr y_loop_end
-        inc r5
-        store posy, r5
 
         ; im0 = y * offset
+        ; a multiplicacao vem antes pra nao usar o valor de y++
         load r7, offset
         mov r6, r2
         mul r5, r6, r7
 
+        loadn r7, #39
+        cmp r2, r7
+        jgr y_loop_end
+        inc r2      ; Y++
+
+        
     x_loop:
-        store posx, r4
-        loadn r7, #29
-        cmp r4, r7
-        jgr x_loop_end
-        inc r4
+        store posx, r1
 
         ; real0 = x * offset
+        ; a multiplicacao vem antes pra nao usar o valor de x++
         load r7, offset
         mov r6, r1
-        mul r5, r6, r7
+        mul r4, r6, r7
+
+        loadn r7, #29
+        cmp r1, r7
+        jgr x_loop_end
+        inc r1      ; X++
 
         ; mandelbrot_flag = 1
         loadn r3, #1
@@ -171,6 +174,13 @@ mandelbrot_main:
 
         ; TODO: colocar aqui o plot dos dos pontos de acordo com o charmap
         ; usar o posx e posy
+
+        loadn r0, mf
+        jnz is_mandelbrot 
+        ;nao imprime o ponto
+        jmp ending_mandelbrot_iterations
+        is_mandelbrot:
+        ; imprime o ponto usando posx e posy
         jmp ending_mandelbrot_iterations
 
     ; Mandelbrot flag == 0
@@ -185,14 +195,14 @@ mandelbrot_main:
         pop r1
         pop r0
         
-        inc r1          ; x++
-        loadn r6, #0    ; k == 0, para futuras iteracoes
+        ;inc r1          ; x++
+        loadn r6, #0    ; reinicia o contador k, setando ele para 0, para futuras iteracoes
         jmp x_loop
 
     x_loop_end:
         ; Seta o valor para 0, no caso de ser usado em outro loop ou nao
         loadn r1, #0 
-        inc r2          ; y++
+        ;inc r2          ; y++
         jmp y_loop
 
     y_loop_end:
