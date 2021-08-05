@@ -174,12 +174,40 @@ mandelbrot_main:
 
         ; TODO: colocar aqui o plot dos dos pontos de acordo com o charmap
         ; usar o posx e posy
+        push r0
+        push r1
+        push r2
+        push r3
+        push r4
 
-        loadn r0, mf
+        load r0, mf
+        ;loadn r7, #0
+        ;cmp r0, r7
+        breakp
         jnz is_mandelbrot 
+            pop r4
+            pop r3
+            pop r2
+            pop r1
+
         ;nao imprime o ponto
         jmp ending_mandelbrot_iterations
         is_mandelbrot:
+         load r1, posx
+         load r2, posy
+         loadn r3, #120
+         loadn r4, #40
+         ;halt
+         mul r2, r2, r4
+         add r2, r1, r2
+         outchar r3, r2
+
+        pop r4
+        pop r3
+        pop r2
+        pop r1
+        pop r0
+
         ; imprime o ponto usando posx e posy
         jmp ending_mandelbrot_iterations
 
