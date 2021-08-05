@@ -3,15 +3,13 @@
 ; Vitor Caetano Brustolin - 11795589
 ; Marco Antonio Ribeiro de Toledo
 
-; da uma checada ai no codigo to morrendo de sono deve ter coisa errada principalmente
-; na parte de mexer com os registradores, qualquer coisa me pergunta
 jmp main
 
 ; Variaveis globais que sao uteis para as operacoes aritimeticas
 im0: var #1
 real0: var #1
 offset: var #1
-4xoffset: var #1
+mOffset: var #1
 n_iterations: var #1
 mf: var #1
 
@@ -22,10 +20,10 @@ posy: var #1
 main:
 
     ; Setando o offset que sera usado para fazer as operacoes
-    loadn r7, #64
-    store offset, r7
     loadn r7, #256
-    store 4xoffset, r7
+    store offset, r7
+    loadn r7, #1024
+    store mOffset, r7
 
     call mandelbrot_main
     halt
@@ -37,41 +35,56 @@ main:
 ;   r4 = valor inicial do num real, usado nas iteracoes porem calculado nos loops de fora 
 ;   r5 = valor inicial do num imaginario, mesma coisa do num real 
 mandelbrot_main:
-    push r0
-    push r1
-    push r2
-    push r3
-    push r4
-    push r5
-    
     ; Setando a posicao inicial assim como os valores iniciais como 0
     loadn r0, #0
     loadn r1, #0
     loadn r2, #0
+    loadn r4, #0
+    loadn r5, #0
+    store posy, r5
 
     ; Dois loops enlacados que ciclam por todos os "pixels" da tela
     y_loop:
-        store posy, r5
-        loadn r7, #30
+    ;;     push r1
+    ;;     push r2
+    ;;     push r3
+
+    ;;     loadn r1, #80
+    ;; mov r2, r5
+    ;; loadn r3, #'0'
+    ;; add r2, r2, r3
+    ;; outchar r2, r1
+
+    ;;     pop r3
+    ;;     pop r2
+    ;;     pop r1
+
+        load r5, posy
+    ;; halt
+        loadn r7, #39
         cmp r5, r7
-        jeq y_loop_end
+        jgr y_loop_end
+        inc r5
+        store posy, r5
 
         ; im0 = y * offset
-        loadn r7, offset
-        loadi r6, r2
-        mult r5, r6, r7 
+        load r7, offset
+        mov r6, r2
+        mul r5, r6, r7
+
     x_loop:
         store posx, r4
-        loadn r7, #40
+        loadn r7, #29
         cmp r4, r7
-        jeq x_loop_end
+        jgr x_loop_end
+        inc r4
 
         ; real0 = x * offset
-        loadn r7, offset
-        loadi r6, r1
-        mult r5, r6, r7 
+        load r7, offset
+        mov r6, r1
+        mul r5, r6, r7
 
-        ; mandelbrot_flag == 1
+        ; mandelbrot_flag = 1
         loadn r3, #1
         store mf, r3
 
@@ -98,41 +111,64 @@ mandelbrot_main:
 
     ; Loop principal que faz as iteracoes
     iterations_loop:
+        load r7, n_iterations
+        cmp r6, r7
+        jgr escape
+
         ;r2 = (r * r) / offset
-        mult r2, r0, r0
-        loadn r7, #offset
+        mul r2, r0, r0
+        load r7, offset
         div r2, r2, r7
 
         ;im2 = (im * im) / offset
-        mult r3, r1, r1
-        loadn r7, #offset
+        mul r3, r1, r1
+        load r7, offset
         div r3, r3, r7
 
         ; Se r_squared + i_squared) > (4 * offset), mf = 0, jmp escape
         push r6         ; para usar o registrador r6 sem perder a referencia ao contador
         add r7, r2, r3
-        loadn r6, #4xoffset
+        load r6, mOffset
         cmp r7, r6
         jgr setting_mf
 
         ; im_part = (2 * real_part * im_part)/offset + im0
-        mult r7, r0, r1
+        mul r7, r0, r1
         loadn r6, #2
-        mult r7, r7, r6 
-        loadn r6, #offset
+        mul r7, r7, r6
+        load r6, offset
         div r7, r7, r6
         add r7, r7, r5
-        loadi r1, r7
+        mov r1, r7
 
         ; real_part = r_squared - i_squared + real0
         sub r7, r2, r3
         add r7, r7, r4
-        loadi r0, r7
+        mov r0, r7
         pop r6      ; trazendo o contador de volta pro registrador e incrementando
         inc r6
         jmp iterations_loop
         
     escape:
+    ;;     push r1
+    ;;     push r2
+    ;;     push r3
+    ;;     push r4
+
+    ;;     load r1, posx
+    ;;     load r2, posy
+    ;;     loadn r3, #120
+    ;;     loadn r4, #40
+    ;;     halt
+    ;;     mul r2, r2, r4
+    ;;     add r2, r1, r2
+    ;;     outchar r3, r2
+
+        ;; pop r4
+        ;; pop r3
+        ;; pop r2
+        ;; pop r1
+
         ; TODO: colocar aqui o plot dos dos pontos de acordo com o charmap
         ; usar o posx e posy
         jmp ending_mandelbrot_iterations
@@ -160,12 +196,21 @@ mandelbrot_main:
         jmp y_loop
 
     y_loop_end:
+        ;; push r1
+        ;; push r2
+        ;; push r3
+        ;; push r4
+
+    ;;     loadn r1, #80
+    ;; load r2, posy
+    ;; loadn r3, #'0'
+    ;; add r2, r2, r3
+        ;; outchar r2, r1
+
+        ;; pop r4
+        ;; pop r3
+        ;; pop r2
+        ;; pop r1
     
-mandelbrot__sai:
-        pop r5
-        pop r4
-        pop r3
-        pop r2
-        pop r1
-        pop r0
-        rts
+mandelbrot_sai:
+    halt
