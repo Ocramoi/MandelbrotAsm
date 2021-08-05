@@ -12,6 +12,14 @@ offset: var #1
 mOffset: var #1
 n_iterations: var #1
 mf: var #1
+im_start: var #1
+static im_start, #0
+im_end: var #1
+static im_end, #1
+real_start: var #1
+static real_start, #0
+real_end: var #1
+static real_end, #2
 
 ; Salvar como variaveis globais os valores de x de y para usar nas iteracoes
 posx: var #1
@@ -120,86 +128,134 @@ mandelbrot_main:
 
         ;r2 = (r * r) / offset
         load r7, offset
-        div r7, r0, r7
-        mul r2, r0, r7
-        ;load r7, offset
-        ;div r2, r2, r7
+
+        load r2, posx
+
+        push r1
+
+        loadn r1, #39
+        mul r2, r2, r7
+        div r2, r2, r1
+
+        load r1, real_end
+        mul r2, r2, r1
+
+        pop r1
+
+        div r2, r2, r7
 
         ;im2 = (im * im) / offset
         load r7, offset
-        div r7, r1, r7
-        mul r3, r1, r7
-        ;mul r3, r1, r1
-        ;load r7, offset
-        ;div r3, r3, r7
+
+        load r3, posy
+
+        push r1
+
+        loadn r1, #29
+        mul r3, r3, r7
+        div r3, r3, r1
+
+        load r1, im_end
+        mul r3, r3, r1
+
+        pop r1
+
+        div r3, r3, r7
+
+
+
+    mul r2, r2, r2
+    mul r3, r3, r3
+
+
+        push r6         ; para usar o registrador r6 sem perder a referencia ao contador
 
         ; Se r_squared + i_squared) > (4 * offset), mf = 0, jmp escape
-        push r6         ; para usar o registrador r6 sem perder a referencia ao contador
         add r7, r2, r3
-        load r6, mOffset
-        cmp r7, r6
+        load r0, mOffset
+        cmp r7, r0
+        ;; halt
         jgr setting_mf
 
         ; im_part = (2 * real_part * im_part)/offset + im0
-        mul r7, r0, r1
-        loadn r6, #2
-        mul r7, r7, r6
-        load r6, offset
-        div r7, r7, r6
-        add r7, r7, r5
-        mov r1, r7
+        ;; mul r7, r0, r1
+        ;; loadn r6, #2
+        ;; mul r7, r7, r6
+        ;; load r6, offset
+        ;; div r7, r7, r6
+        ;; add r7, r7, r5
+        ;; mov r1, r7
 
         ; real_part = r_squared - i_squared + real0
-        sub r7, r2, r3
-        add r7, r7, r4
-        mov r0, r7
-        pop r6      ; trazendo o contador de volta pro registrador e incrementando
+        ;; sub r7, r2, r3
+        ;; add r7, r7, r4
+        ;; mov r0, r7
+        ;; pop r6      ; trazendo o contador de volta pro registrador e incrementando
         inc r6
         jmp iterations_loop
         
     escape:
-    ;;     push r1
-    ;;     push r2
-    ;;     push r3
-    ;;     push r4
+        ;; load r0, mf
+        ;; jnz is_mandelbrot
+        ;; jmp ending_mandelbrot_iterations
 
-    ;;     load r1, posx
-    ;;     load r2, posy
-    ;;     loadn r3, #120
-    ;;     loadn r4, #40
-    ;;     halt
-    ;;     mul r2, r2, r4
-    ;;     add r2, r1, r2
-    ;;     outchar r3, r2
+        ;; is_mandelbrot:
+            ;; halt
+            load r1, posy
+            load r2, posx
 
-        ;; pop r4
-        ;; pop r3
-        ;; pop r2
-        ;; pop r1
+    loadn r3, #40
+    cmp r6, r3
+    jle grad1
 
-        ; TODO: colocar aqui o plot dos dos pontos de acordo com o charmap
-        ; usar o posx e posy
+    loadn r3, #80
+    cmp r6, r3
+    jle grad2
 
-        ;breakp
-        load r0, mf
-        jnz is_mandelbrot 
+    loadn r3, #120
+    cmp r6, r3
+    jle grad3
 
+    loadn r3, #160
+    cmp r6, r3
+    jle grad4
+
+    loadn r3, #200
+    cmp r6, r3
+    jle grad5
+
+    jle grad6
+
+            grad1:
+                loadn r3, #'a'
+                jmp printa
+            grad2:
+                loadn r3, #'b'
+                jmp printa
+            grad3:
+                loadn r3, #'c'
+                jmp printa
+            grad4:
+                loadn r3, #'d'
+                jmp printa
+            grad5:
+                loadn r3, #'e'
+                jmp printa
+            grad6:
+                loadn r3, #'f'
+
+            printa:
+                loadn r4, #40
+                mul r2, r2, r4
+                add r2, r1, r2
+                outchar r3, r2
+
+        ; imprime o ponto usando posx e posy
         jmp ending_mandelbrot_iterations
-        is_mandelbrot:
-            load r1, posx
-            load r2, posy
-            loadn r3, #120
-            loadn r4, #40
-            mul r2, r2, r4
-            add r2, r1, r2
-            outchar r3, r2
-
-            ; imprime o ponto usando posx e posy
-            jmp ending_mandelbrot_iterations
 
     ; Mandelbrot flag == 0
     setting_mf:
-        pop r6
+        ;; pop r6
         loadn r7, #0
         store mf, r7
         jmp escape
@@ -221,21 +277,6 @@ mandelbrot_main:
         jmp y_loop
 
     y_loop_end:
-        ;; push r1
-        ;; push r2
-        ;; push r3
-        ;; push r4
 
-    ;;     loadn r1, #80
-    ;; load r2, posy
-    ;; loadn r3, #'0'
-    ;; add r2, r2, r3
-        ;; outchar r2, r1
-
-        ;; pop r4
-        ;; pop r3
-        ;; pop r2
-        ;; pop r1
-    
 mandelbrot_sai:
     halt
