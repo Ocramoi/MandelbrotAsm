@@ -50,20 +50,6 @@ mandelbrot_main:
 
     ; Dois loops enlacados que ciclam por todos os "pixels" da tela
     y_loop:
-    ;;     push r1
-    ;;     push r2
-    ;;     push r3
-
-    ;;     loadn r1, #80
-    ;; mov r2, r5
-    ;; loadn r3, #'0'
-    ;; add r2, r2, r3
-    ;; outchar r2, r1
-
-    ;;     pop r3
-    ;;     pop r2
-    ;;     pop r1
-
         ;load r2, posy
         store posy, r2
 
@@ -106,10 +92,10 @@ mandelbrot_main:
     ;   Os registradores r4 e r5 permanecem os mesmos
     ;   r6 = counter do loop de iteracoes
     setting_iteration_variables:
-        push r0
-        push r1
-        push r2
-        push r3
+        ;; push r0
+        ;; push r1
+        ;; push r2
+        ;; push r3
         loadn r0, #0
         loadn r1, #0
         loadn r2, #0
@@ -270,10 +256,10 @@ mandelbrot_main:
         jmp escape
         
     ending_mandelbrot_iterations:
-        pop r3
-        pop r2
-        pop r1
-        pop r0
+        ;; pop r3
+        ;; pop r2
+        ;; pop r1
+        ;; pop r0
         
         inc r1          ; x++
         loadn r6, #0    ; reinicia o contador k, setando ele para 0, para futuras iteracoes
