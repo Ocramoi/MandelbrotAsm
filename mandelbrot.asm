@@ -163,9 +163,8 @@ mandelbrot_main:
         div r3, r3, r7
 
 
-
-    mul r2, r2, r2
-    mul r3, r3, r3
+        mul r2, r2, r2
+        mul r3, r3, r3
 
 
         push r6         ; para usar o registrador r6 sem perder a referencia ao contador
@@ -199,32 +198,42 @@ mandelbrot_main:
         ;; jnz is_mandelbrot
         ;; jmp ending_mandelbrot_iterations
 
-        ;; is_mandelbrot:
-            ;; halt
-            load r1, posy
-            load r2, posx
+            ;; push r1
+            ;; push r2
+            ;; push r3
 
-    loadn r3, #40
-    cmp r6, r3
-    jle grad1
+            ;; loadn r3, #'x'
+            ;; loadn r1, #0
+            ;; outchar r3, r1
 
-    loadn r3, #80
-    cmp r6, r3
-    jle grad2
+            ;; pop r3
+            ;; pop r2
+            ;; pop r1
 
-    loadn r3, #120
-    cmp r6, r3
-    jle grad3
+            load r1, posx
+            load r2, posy
 
-    loadn r3, #160
-    cmp r6, r3
-    jle grad4
+            loadn r3, #40
+            cmp r6, r3
+            jle grad1
 
-    loadn r3, #200
-    cmp r6, r3
-    jle grad5
+            loadn r3, #80
+            cmp r6, r3
+            jle grad2
 
-    jle grad6
+            loadn r3, #120
+            cmp r6, r3
+            jle grad3
+
+            loadn r3, #160
+            cmp r6, r3
+            jle grad4
+
+            loadn r3, #200
+            cmp r6, r3
+            jle grad5
+
+            jmp grad6
 
             grad1:
                 loadn r3, #'a'
@@ -246,9 +255,9 @@ mandelbrot_main:
 
             printa:
                 loadn r4, #40
-                mul r2, r2, r4
+                mul r1, r1, r4
                 add r2, r1, r2
-                outchar r3, r2
+                outchar r3, r1
 
         ; imprime o ponto usando posx e posy
         jmp ending_mandelbrot_iterations
@@ -256,8 +265,8 @@ mandelbrot_main:
     ; Mandelbrot flag == 0
     setting_mf:
         ;; pop r6
-        loadn r7, #0
-        store mf, r7
+        ;; loadn r7, #0
+        ;; store mf, r7
         jmp escape
         
     ending_mandelbrot_iterations:
@@ -273,7 +282,7 @@ mandelbrot_main:
     x_loop_end:
         ; Seta o valor para 0, no caso de ser usado em outro loop ou nao
         loadn r1, #0 
-        ;inc r2          ; y++
+        ;; inc r2                  y++ ;
         jmp y_loop
 
     y_loop_end:
