@@ -43,15 +43,20 @@ main:
 ;   r5 = valor inicial do num imaginario, mesma coisa do num real 
 mandelbrot_main:
     ; Setando a posicao inicial assim como os valores iniciais como 0
+    loadn r0, #0
     loadn r1, #0
     loadn r2, #0
     loadn r4, #0
     loadn r5, #0
+    store posx, r0
+    store posy, r0
+    
 
     ; Dois loops enlacados que ciclam por todos os "pixels" da tela
     y_loop:
         ;load r2, posy
-        store posy, r2
+        ;store posy, r2
+        load r2, posy
 
     ;; halt
 
@@ -64,11 +69,12 @@ mandelbrot_main:
         loadn r7, #39
         cmp r2, r7
         jgr y_loop_end
-        inc r2      ; Y++
+        ;inc r2      ; Y++
 
         
     x_loop:
-        store posx, r1
+        ;store posx, r1
+        load r1, posx
 
         ; real0 = x * offset
         ; a multiplicacao vem antes pra nao usar o valor de x++
@@ -123,6 +129,7 @@ mandelbrot_main:
         mul r2, r2, r7
         div r2, r2, r1
 
+        ; onde declara esse real_end?
         load r1, real_end
         mul r2, r2, r1
 
@@ -153,7 +160,8 @@ mandelbrot_main:
         mul r3, r3, r3
 
 
-        push r6         ; para usar o registrador r6 sem perder a referencia ao contador
+        ; dar pop nisso ?
+        ;push r6         ; para usar o registrador r6 sem perder a referencia ao contador
 
         ; Se r_squared + i_squared) > (4 * offset), mf = 0, jmp escape
         add r7, r2, r3
@@ -196,6 +204,7 @@ mandelbrot_main:
             ;; pop r2
             ;; pop r1
 
+            breakp
             load r1, posx
             load r2, posy
 
@@ -261,13 +270,21 @@ mandelbrot_main:
         ;; pop r1
         ;; pop r0
         
-        inc r1          ; x++
+        ;inc r1          ; x++
+        load r7, posx
+        inc r7          ; x++
+        store posx, r7
         loadn r6, #0    ; reinicia o contador k, setando ele para 0, para futuras iteracoes
         jmp x_loop
 
     x_loop_end:
         ; Seta o valor para 0, no caso de ser usado em outro loop ou nao
-        loadn r1, #0 
+        loadn r7, #0
+        store posx, r7
+        load r7, posy
+        inc r7          ; y++
+        store posy, r7
+        ;loadn r1, #0 
         ;; inc r2                  y++ ;
         jmp y_loop
 
