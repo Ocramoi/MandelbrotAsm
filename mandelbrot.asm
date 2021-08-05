@@ -28,9 +28,9 @@ posy: var #1
 main:
 
     ; Setando o offset que sera usado para fazer as operacoes
-    loadn r7, #256
+    loadn r7, #64
     store offset, r7
-    loadn r7, #2
+    loadn r7, #256
     store mOffset, r7
 
     call mandelbrot_main
@@ -155,8 +155,52 @@ mandelbrot_main:
 
         load r7, offset
         div r2, r2, r7
-        div r3, r3, r7
+    div r3, r3, r7
 
+;;     loadn r7, #160
+;;     cmp r2, r7
+;;     jle val1_1
+
+;;     loadn r7, #320
+;;     cmp r2, r7
+;;     jle val1_2
+
+;;     jmp val1_3
+
+;;     val1_1:
+;;         loadn r2, #0
+;;         jmp cmp2
+
+;;     val1_2:
+;;         loadn r2, #1
+;;         jmp cmp2
+;;     val1_3:
+;;         loadn r2, #2
+;;         jmp cmp2
+
+;; cmp2:
+;;     loadn r7, #160
+;;     cmp r3, r7
+;;     jle val2_1
+
+;;     loadn r7, #320
+;;     cmp r3, r7
+;;     jle val2_2
+
+;;     jmp val2_3
+
+;;     val2_1:
+;;         loadn r3, #0
+;;         jmp saicmp
+
+;;     val2_2:
+;;         loadn r3, #1
+;;         jmp saicmp
+;;     val2_3:
+;;         loadn r3, #2
+;;         jmp saicmp
+
+;; saicmp:
     push r4
     loadn r4, #2
         pow r2, r2, r4
@@ -165,11 +209,11 @@ mandelbrot_main:
 
         ; Se r_squared + i_squared) > (4 * offset), mf = 0, jmp escape
         add r7, r2, r3
-    breakp
+    ;; breakp
         load r0, mOffset
         cmp r7, r0
         ;; halt
-        jgr setting_mf
+        jeg setting_mf
 
         ; im_part = (2 * real_part * im_part)/offset + im0
         ;; mul r7, r0, r1
@@ -247,7 +291,7 @@ mandelbrot_main:
         ;; pop r6
         ;; loadn r7, #0
         ;; store mf, r7
-    breakp
+    ;; breakp
         jmp escape
         
     ending_mandelbrot_iterations:
