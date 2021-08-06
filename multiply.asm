@@ -45,6 +45,12 @@ main:
     loadn r7, #64
     store offset, r7
 
+    loadn r7, #5
+    store multiplicand, r7
+
+    loadn r7, #3
+    store multiplier, r7
+
     call multiply
     halt
 
